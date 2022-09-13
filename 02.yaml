@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: gcr.io/kuar-demo/kuard-amd64:1
+    env:
+      - name: TEST
+        value: "TO jest DEMO"
+      - name: DEMO
+        value: "1.1.1.1"
