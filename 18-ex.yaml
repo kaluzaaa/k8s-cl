@@ -1,0 +1,99 @@
+# Deployment and Service
+# Image: docker.io/redis:6.0.5
+# Service name: redis-leader
+# Deployment name: redis-leader
+# Porty 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-leader
+  labels:
+    app: redis-leader
+spec:
+  selector:
+    matchLabels:
+      app: redis-leader
+  template:
+    metadata:
+      labels:
+        app: redis-leader
+    spec:
+      containers:
+      - name: redis-leader
+        image: docker.io/redis:6.0.5
+        ports:
+        - containerPort: 6379
+          name: redis
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-leader
+spec:
+  selector:
+    app: redis-leader
+  ports:
+  - port: 6379
+    targetPort: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-follower
+spec:
+  selector:
+    app: redis-leader
+  ports:
+  - port: 6379
+    targetPort: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front
+  labels:
+    app: front
+spec:
+  selector:
+    matchLabels:
+      app: front
+  template:
+    metadata:
+      labels:
+        app: front
+    spec:
+      containers:
+      - name: front
+        image: us-docker.pkg.dev/google-samples/containers/gke/gb-frontend:v5
+        env:
+        - name: GET_HOSTS_FROM
+          value: "dns"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: front
+spec:
+  type: LoadBalancer
+  selector:
+    app: front
+  ports:
+  - port: 80
+    targetPort: http
+# Deployment and Service
+# Image: us-docker.pkg.dev/google-samples/containers/gke/gb-frontend:v5
+# Zmienna środowiskowa GET_HOSTS_FROM o wartości "dns"
+# Servcie typu LoadBalancer
+# Porty 80

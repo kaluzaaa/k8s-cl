@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app
+  labels:
+    name: app
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+  - host: #{appHostname}#
+#  - host: pets-lukasz-kaluzny.9f1fb986174e4a17975f.westeurope.aksapp.io
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: web
+            port: 
+              number: 80
+      - pathType: Prefix
+        path: "/pet"
+        backend:
+          service:
+            name: api
+            port: 
+              number: 8080
+      - pathType: Prefix
+        path: "/gif"
+        backend:
+          service:
+            name: api
+            port: 
+              number: 8080
